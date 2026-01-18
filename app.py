@@ -74,7 +74,7 @@ if page == "Главная":
     
     # Качественное атмосферное фото (тёмная тема, кибербезопасность)
     st.image(
-        "https://images.unsplash.com/photo-1555949963-aa79d0ebc8fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+        "https://media.istockphoto.com/id/2174551157/ru/%D1%84%D0%BE%D1%82%D0%BE/%D0%BA%D0%BE%D0%BD%D1%86%D0%B5%D0%BF%D1%86%D0%B8%D1%8F-%D0%BA%D0%BE%D0%BD%D1%84%D0%B8%D0%B4%D0%B5%D0%BD%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D1%81%D1%82%D0%B8-%D0%B1%D0%B8%D0%B7%D0%BD%D0%B5%D1%81-%D1%82%D0%B5%D1%85%D0%BD%D0%BE%D0%BB%D0%BE%D0%B3%D0%B8%D0%B9-%D0%BF%D0%BE-%D0%B7%D0%B0%D1%89%D0%B8%D1%82%D0%B5-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-%D0%BA%D0%B8%D0%B1%D0%B5%D1%80%D0%B1%D0%B5%D0%B7%D0%BE%D0%BF%D0%B0%D1%81%D0%BD%D0%BE%D1%81%D1%82%D0%B8.jpg?s=2048x2048&w=is&k=20&c=6vG8K0tZ0z8pG5m2lXj9z8z8z8z8z8z8z8z8z8z8z8z8=",
         caption="Защита в цифровом мире",
         use_column_width=True
     )
