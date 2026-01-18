@@ -1,0 +1,6 @@
+streamlit
+pandas
+numpy
+catboost>=1.2.0
+scikit-learn
+seaborn
