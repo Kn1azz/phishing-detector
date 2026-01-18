@@ -1,5 +1,7 @@
+
 import streamlit as st
 import pandas as pd
+import numpy as np
 from catboost import CatBoostClassifier
 
 # ─── Загрузка модели ─────────────────────────────────────────────────────────
@@ -11,7 +13,7 @@ def load_model():
 
 model = load_model()
 
-# ─── Базовые признаки ────────────────────────────────────────────────────────
+# ─── Список базовых признаков (22) ────────────────────────────────────────────
 base_features = [
     'having_IP_Address', 'URL_Length', 'having_At_Symbol', 'Prefix_Suffix',
     'having_Sub_Domain', 'SSLfinal_State', 'Domain_registeration_length', 'port',
@@ -21,33 +23,33 @@ base_features = [
     'Links_pointing_to_page', 'Statistical_report'
 ]
 
-# ─── Краткие описания для главной страницы и подсказок ───────────────────────
-feature_tooltips = {
-    'having_IP_Address': 'IP вместо домена в URL',
-    'URL_Length': 'Длина адреса сайта',
-    'having_At_Symbol': 'Символ @ в адресе',
-    'Prefix_Suffix': 'Дефис в домене',
-    'having_Sub_Domain': 'Количество поддоменов',
-    'SSLfinal_State': 'Качество SSL-сертификата (самый важный!)',
-    'Domain_registeration_length': 'Возраст регистрации домена',
-    'port': 'Нестандартный порт',
-    'Request_URL': '% внешних ресурсов',
-    'URL_of_Anchor': '% подозрительных ссылок в <a>',
-    'Links_in_tags': '% подозрительных тегов',
-    'SFH': 'Куда отправляется форма',
-    'Submitting_to_email': 'Отправка на email',
-    'Abnormal_URL': 'Аномалии в URL',
-    'on_mouseover': 'Изменение строки состояния',
-    'age_of_domain': 'Возраст домена',
-    'DNSRecord': 'Наличие DNS-записи',
-    'web_traffic': 'Популярность сайта',
-    'Page_Rank': 'PageRank Google',
-    'Google_Index': 'Индексация в Google',
-    'Links_pointing_to_page': 'Внешние ссылки на страницу',
-    'Statistical_report': 'В отчётах о фишинге'
+# ─── Описания признаков для подсказок ─────────────────────────────────────────
+feature_descriptions = {
+    'having_IP_Address': 'Есть ли IP-адрес вместо домена в URL?',
+    'URL_Length': 'Длина URL (очень длинные — подозрительны)',
+    'having_At_Symbol': 'Есть ли символ @ в URL?',
+    'Prefix_Suffix': 'Есть ли дефис (-) в доменном имени?',
+    'having_Sub_Domain': 'Количество поддоменов (много — подозрительно)',
+    'SSLfinal_State': 'Качество SSL-сертификата (-1 — плохой/отсутствует)',
+    'Domain_registeration_length': 'Срок регистрации домена (короткий — подозрительно)',
+    'port': 'Используется ли нестандартный порт?',
+    'Request_URL': '% внешних ресурсов в запросах',
+    'URL_of_Anchor': '% подозрительных ссылок в якорях (<a> теги)',
+    'Links_in_tags': '% подозрительных ссылок в мета-тегах',
+    'SFH': 'Server Form Handler (куда отправляется форма)',
+    'Submitting_to_email': 'Отправка формы на email?',
+    'Abnormal_URL': 'Аномалии в структуре URL',
+    'on_mouseover': 'Изменяется ли status bar при наведении мыши?',
+    'age_of_domain': 'Возраст домена (молодой — подозрительно)',
+    'DNSRecord': 'Есть ли запись в DNS?',
+    'web_traffic': 'Популярность сайта по трафику',
+    'Page_Rank': 'PageRank от Google',
+    'Google_Index': 'Проиндексирован ли сайт Google?',
+    'Links_pointing_to_page': 'Количество внешних ссылок на страницу',
+    'Statistical_report': 'Есть ли в отчётах о фишинге?'
 }
 
-# ─── Инженерные признаки ─────────────────────────────────────────────────────
+# ─── Функция создания дополнительных признаков ────────────────────────────────
 def add_engineered_features(df):
     df = df.copy()
     df['total_red_flags'] = (df == '-1').sum(axis=1).astype(str)
@@ -58,15 +60,6 @@ def add_engineered_features(df):
     df['subdomain_prefix'] = (df['having_Sub_Domain'].astype(int) * 
                               df['Prefix_Suffix'].astype(int)).astype(str)
     return df
-
-# ─── Конфигурация страницы ───────────────────────────────────────────────────
-st.set_page_config(
-    page_title="Phishing Detector • Защита от фишинга",
-    page_icon="🛡️",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
 # ─── Стилизация (немного современнее) ─────────────────────────────────────────
 st.markdown("""
     <style>
@@ -87,120 +80,121 @@ st.markdown("""
     }
     </style>
 """, unsafe_allow_html=True)
+# ─── Интерфейс ────────────────────────────────────────────────────────────────
+st.set_page_config(page_title="Phishing Detector", layout="wide")
 
-# ─── Боковая панель ──────────────────────────────────────────────────────────
+# Боковая панель
 with st.sidebar:
     st.title("🛡️ Phishing Detector")
     st.markdown("**Обнаружение фишинга** с точностью ~97%")
     
     pages = ["Главная", "Проверка", "Признаки", "О модели"]
     page = st.radio("Навигация", pages, index=0)
-
-# ─── Главная страница ─────────────────────────────────────────────────────────
+# ─── Главная ──────────────────────────────────────────────────────────────────
 if page == "Главная":
-    st.title("🛡️ Защити себя от фишинга")
+    st.title("🛡️ Phishing Detector")
+    st.markdown("""
+    ### Приложение для проверки сайтов на фишинг
     
-    col1, col2 = st.columns([3, 2])
+    Это инструмент на базе машинного обучения, который помогает определить,  
+    является ли сайт фишинговым или легитимным.
     
-    with col1:
-        st.markdown("""
-        **Phishing Detector** — это инструмент, который помогает  
-        быстро понять, безопасен ли сайт, который вы хотите открыть.
-        
-        Модель анализирует 26 признаков и выдаёт вердикт за секунды.
-        
-        - Точность: **~97%**  
-        - ROC-AUC: **0.995**  
-        - Особое внимание: **не пропустить фишинг**
-        """)
-        
-        st.markdown("**Разработал:** Muhamadasror • Душанбе • 2026")
+    **Разработчик:** Muhamadasror  
+    **Место:** Душанбе, Таджикистан  
+    **Дата создания:** 2025–2026
     
-    with col2:
-        st.image(
-            "https://images.unsplash.com/photo-1563986768609-620da13593e0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-            caption="Безопасный интернет начинается с правильных решений",
-            use_column_width=True
-        )
+    Модель обучена на 11 000+ примерах и показывает очень высокую точность.
+    
+    **Перейдите в раздел «Проверка сайта»**, чтобы начать анализ!
+    """)
 
 # ─── Проверка сайта ───────────────────────────────────────────────────────────
-elif page == "Проверка":
-    st.title("🔍 Проверить сайт")
+elif page == "Проверка сайта":
+    st.title("🔍 Проверка сайта на фишинг")
     
-    st.info("Выберите значения признаков. -1 = подозрительно • 0 = нейтрально • 1 = нормально")
-    
+    st.info("""
+    Введите значения признаков сайта, который хотите проверить.  
+    Все признаки закодированы следующим образом:  
+    **-1** — подозрительно / плохо  
+    **0** — нейтрально  
+    **1** — нормально / хорошо
+    """)
+
+    # Два столбца для ввода
     col1, col2 = st.columns(2)
     input_data = {}
-    
-    for i, feat in enumerate(base_features):
+
+    for i, feature in enumerate(base_features):
         with col1 if i % 2 == 0 else col2:
             val = st.selectbox(
-                feat,
+                label=feature,
                 options=["-1", "0", "1"],
-                index=1,
-                help=feature_tooltips.get(feat, ""),
-                key=f"feat_{feat}"
+                index=1,  # по умолчанию 0
+                help=feature_descriptions.get(feature, "Описание отсутствует"),
+                key=f"input_{feature}"
             )
-            input_data[feat] = val
-    
-    if st.button("Проверить", type="primary", use_container_width=True):
-        with st.spinner("Анализ..."):
-            df = pd.DataFrame([input_data]).astype(str)
-            enhanced = add_engineered_features(df)
+            input_data[feature] = val
+
+    if st.button("🚀 Проверить сайт", type="primary", use_container_width=True):
+        with st.spinner("Анализирую..."):
+            # Создаём DataFrame (все значения — строки!)
+            input_df = pd.DataFrame([input_data])
+            
+            # Явно приводим к строкам (очень важно для CatBoost!)
+            input_df = input_df.astype(str)
+            
+            # Добавляем инженерные признаки
+            enhanced_df = add_engineered_features(input_df)
             
             try:
-                pred = model.predict(enhanced)[0]
-                proba = model.predict_proba(enhanced)[0][1] * 100
+                # Предсказание
+                pred = model.predict(enhanced_df)[0]
+                proba = model.predict_proba(enhanced_df)[0][1] * 100
                 
+                # Результат
                 if pred == 1:
                     st.error(f"""
-                    ### ⚠️ ФИШИНГ!
-                    Вероятность: **{proba:.1f}%**
-                    Не вводите личные данные!
-                    """)
-                else:
-                    st.success(f"""
-                    ### ✅ Безопасно
+                    ### ⚠️  ОПАСНО! Фишинговый сайт!
                     Вероятность фишинга: **{proba:.1f}%**
                     """)
+                    st.markdown("**Не вводите** личные данные, пароли, карты!")
+                else:
+                    st.success(f"""
+                    ### ✅  Сайт выглядит безопасным
+                    Вероятность фишинга: **{proba:.1f}%**
+                    """)
+                    st.markdown("Но будьте бдительны — всегда проверяйте адрес и сертификат!")
+                    
             except Exception as e:
-                st.error("Ошибка предсказания")
+                st.error("Произошла ошибка при предсказании модели")
                 st.caption(str(e))
-
-# ─── Признаки ─────────────────────────────────────────────────────────────────
-elif page == "Признаки":
-    st.title("📊 Что означают признаки?")
-    
-    st.markdown("Все признаки закодированы: **-1** — плохо, **0** — нейтрально, **1** — хорошо")
-    
-    for feat, tooltip in feature_tooltips.items():
-        with st.expander(f"**{feat}**"):
-            st.write(tooltip)
 
 # ─── О модели ─────────────────────────────────────────────────────────────────
 elif page == "О модели":
     st.title("ℹ️  О модели")
     
     st.markdown("""
-    **CatBoost** — современный градиентный бустинг, отлично работающий с категориальными данными.
+    ### Основные характеристики модели
     
-    - Датасет: ~11 000 примеров  
-    - Признаков после обработки: 26  
-    - Метрики на тесте:  
-      • Accuracy ≈ 97%  
-      • ROC-AUC ≈ 0.995  
-      • Recall по фишингу ≈ 95–96% (очень важно не пропустить!)
+    - **Алгоритм** — CatBoost (градиентный бустинг)
+    - **Датасет** — ~11 055 примеров
+    - **Признаков после очистки** — 22 базовых + 4 новых
+    - **ROC-AUC** — **0.995**
+    - **Accuracy** — ~**97%**
+    - **Recall** по фишингу — **95–96%** (очень важно не пропускать фишинг!)
     
-    Самые важные признаки:
-    1. SSLfinal_State  
-    2. URL_of_Anchor  
+    **Самые важные признаки** (по убыванию важности):
+    1. URL_of_Anchor  
+    2. SSLfinal_State  
     3. Prefix_Suffix  
     4. SFH  
-    5. Links_in_tags
-    """)
+    5. Links_in_tags  
+    6. web_traffic  
+    ...и другие
     
-    st.markdown("---")
-    st.caption("Создано с заботой о безопасности интернета • 2026")
+    Модель специально настраивалась на **высокий recall** по классу фишинга,  
+    чтобы максимально снизить количество пропущенных опасных сайтов.
+    """)
 
-st.sidebar.markdown("---")
-st.sidebar.caption("v2.1 • Muhamadasror • Душанбе")
+    st.markdown("---")
+    st.caption("Удачи и безопасного серфинга! 🌐🔒")
