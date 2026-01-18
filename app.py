@@ -1,52 +1,158 @@
-import streamlit as st 
-st.set_page_config(
-    page_title="🛡️ Детектор фишинга",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+import streamlit as st
 import pandas as pd
 from catboost import CatBoostClassifier
+import os
 
-# Загружаем модель
+# Настройки страницы
+st.set_page_config(page_title="Phishing Detector 🛡️", page_icon="🛡️", layout="wide")
+
+# Заголовок приложения
+st.title("🛡️ Phishing Detector — Защита от Фишинга")
+st.markdown("""
+Это приложение помогает определить, является ли сайт фишинговым (опасным) или безопасным.  
+Модель основана на CatBoost и обучается на датасете UCI Phishing Websites.  
+**Выберите страницу в меню слева.**
+""")
+
+# Список фич на английском (для модели)
+FEATURES_EN = [
+    'having_IP_Address', 'URL_Length', 'Shortining_Service', 'having_At_Symbol',
+    'double_slash_redirecting', 'Prefix_Suffix', 'having_Sub_Domain', 'SSLfinal_State',
+    'Domain_registeration_length', 'Favicon', 'port', 'HTTPS_token', 'Request_URL',
+    'URL_of_Anchor', 'Links_in_tags', 'SFH', 'Submitting_to_email', 'Abnormal_URL',
+    'Redirect', 'on_mouseover', 'RightClick', 'popUpWidnow', 'Iframe', 'age_of_domain',
+    'DNSRecord', 'web_traffic', 'Page_Rank', 'Google_Index', 'Links_pointing_to_page',
+    'Statistical_report', 'total_red_flags', 'ssl_anchor_interaction', 'no_ssl_short_reg', 'subdomain_prefix'
+]  # Замени на свои точные 26+ фич, включая новые
+
+# Перевод фич на русский
+FEATURES_RU = {
+    'having_IP_Address': 'Наличие IP-адреса в URL',
+    'URL_Length': 'Длина URL',
+    'Shortining_Service': 'Использование сервиса сокращения ссылок',
+    'having_At_Symbol': 'Наличие символа @ в URL',
+    'double_slash_redirecting': 'Двойной слеш для редиректа',
+    'Prefix_Suffix': 'Префикс/суффикс в домене (дефис)',
+    'having_Sub_Domain': 'Наличие субдомена',
+    'SSLfinal_State': 'Финальное состояние SSL-сертификата',
+    'Domain_registeration_length': 'Длина регистрации домена',
+    'Favicon': 'Фавикон с внешнего домена',
+    'port': 'Нестандартный порт',
+    'HTTPS_token': 'Токен HTTPS в URL',
+    'Request_URL': 'URL запроса',
+    'URL_of_Anchor': 'URL якоря',
+    'Links_in_tags': 'Ссылки в тегах',
+    'SFH': 'Server Form Handler',
+    'Submitting_to_email': 'Отправка формы на email',
+    'Abnormal_URL': 'Аномальный URL',
+    'Redirect': 'Редиректы',
+    'on_mouseover': 'On mouseover в JS',
+    'RightClick': 'Отключение правого клика',
+    'popUpWidnow': 'Попап-окна',
+    'Iframe': 'Iframe с нулевой границей',
+    'age_of_domain': 'Возраст домена',
+    'DNSRecord': 'DNS-запись',
+    'web_traffic': 'Веб-трафик (Alexa rank)',
+    'Page_Rank': 'Google Page Rank',
+    'Google_Index': 'Индекс Google',
+    'Links_pointing_to_page': 'Ссылки на страницу',
+    'Statistical_report': 'Статистический отчёт (PhishTank)',
+    'total_red_flags': 'Общее количество красных флагов',
+    'ssl_anchor_interaction': 'Взаимодействие SSL и якоря',
+    'no_ssl_short_reg': 'Нет SSL + короткая регистрация домена',
+    'subdomain_prefix': 'Субдомен + префикс'
+}
+
+# Загрузка модели (предполагаем .cbm в корне)
 model = CatBoostClassifier()
-model.load_model('phishing_detector_catboost.cbm')
+if os.path.exists('phishing_detector_catboost.cbm'):
+    model.load_model('phishing_detector_catboost.cbm')
+else:
+    st.error("Файл модели не найден. Пожалуйста, загрузите .cbm в репозиторий.")
 
-# Список всех фич (точно как в обучении)
-FEATURES = [  # Скопируй из твоего X_enhanced.columns
-    'having_IP_Address', 'URL_Length', 'having_At_Symbol', 'Prefix_Suffix',
-    'having_Sub_Domain', 'SSLfinal_State', 'Domain_registeration_length',
-    'port', 'Request_URL', 'URL_of_Anchor', 'Links_in_tags', 'SFH',
-    'Submitting_to_email', 'Abnormal_URL', 'on_mouseover', 'RightClick',
-    'DNSRecord', 'web_traffic', 'Page_Rank', 'Google_Index',
-    'Links_pointing_to_page', 'Statistical_report', 'total_red_flags',
-    'ssl_anchor_interaction', 'no_ssl_short_reg', 'subdomain_prefix'
-]
+# Меню навигации
+page = st.sidebar.selectbox("Выберите страницу", ["Прогнозирование сайта", "Описание признаков", "О модели"])
 
-st.title("Phishing Detector 🛡️")
-st.markdown("Введите признаки сайта для проверки на фишинг. Значения: -1 (подозрительно), 0 (нейтрально), 1 (нормально).")
+if page == "Прогнозирование сайта":
+    st.header("📝 Введите характеристики сайта")
+    st.markdown("""
+    Заполните признаки сайта ниже.  
+    Модель проанализирует и даст прогноз с вероятностью.  
+    """)
 
-# Форма ввода (красиво, с слайдерами/селектами)
-inputs = {}
-col1, col2 = st.columns(2)
-for i, feat in enumerate(FEATURES):
-    if i % 2 == 0:
-        with col1:
-            inputs[feat] = st.selectbox(feat, [-1, 0, 1], index=1)  # По умолчанию 1
-    else:
-        with col2:
-            inputs[feat] = st.selectbox(feat, [-1, 0, 1], index=1)
+    inputs = {}
+    col1, col2 = st.columns(2)
+    for i, feat_en in enumerate(FEATURES_EN):
+        feat_ru = FEATURES_RU.get(feat_en, feat_en)
+        with col1 if i % 2 == 0 else col2:
+            inputs[feat_en] = st.selectbox(feat_ru, [-1, 0, 1], index=1)
 
-if st.button("Проверить сайт"):
-    df = pd.DataFrame([inputs]).reindex(columns=FEATURES, fill_value=0)
-    proba = model.predict_proba(df)[0][1]
-    pred = 1 if proba >= 0.5 else 0
+    if st.button("Проверить сайт", type="primary"):
+        with st.spinner("Анализируем сайт..."):
+            df_input = pd.DataFrame([inputs])
+            proba = model.predict_proba(df_input)[0][1]  # Вероятность класса 1 (предполагаем 1 = фишинг)
 
-    st.success(f"Вероятность фишинга: {proba:.2%}")
-    if pred == 1:
-        st.error("ОПАСНО! Это может быть фишинг.")
-    else:
-        st.success("Похоже на безопасный сайт.")
+            st.subheader("Результат анализа")
+            if proba >= 0.5:
+                st.error(f"⚠️ ФИШИНГОВЫЙ САЙТ! Вероятность: **{proba * 100:.2f}%**")
+                st.write("**Рекомендация:** Не вводите данные! Это опасно.")
+            else:
+                st.success(f"✅ БЕЗОПАСНЫЙ САЙТ! Вероятность фишинга: **{proba * 100:.2f}%**")
+                st.write("**Рекомендация:** Похоже на легитимный сайт, но будьте осторожны.")
 
-# Добавь футер
-st.markdown("---")
-st.markdown("Создано Мухаммадом. GitHub: [phishing-detector](https://github.com/твой-username/phishing-detector)")
+            # Красивая визуализация вероятности
+            st.progress(proba)
+            st.caption(f"Вероятность фишинга: {proba * 100:.2f}% | Безопасность: {(1 - proba) * 100:.2f}%")
+
+elif page == "Описание признаков":
+    st.header("📖 Описание признаков")
+    st.markdown("""
+    Здесь объяснено, что значит каждый признак и что обозначают значения -1, 0, 1.  
+    -1 = подозрительно (красный флаг)  
+    0 = нейтрально  
+    1 = нормально (безопасно)  
+    """)
+
+    for feat_en, desc in FEATURES_RU.items():
+        with st.expander(desc):
+            st.write(f"**Что значит:** {desc} — признак, который помогает определить фишинг.")
+            st.write("**-1:** Подозрительно (например, длинный URL, нет SSL)")
+            st.write("**0:** Нейтрально (среднее значение, не ясно)")
+            st.write("**1:** Нормально (безопасно, например, валидный SSL)")
+
+elif page == "О модели":
+    st.header("🤖 О модели CatBoost")
+    st.markdown("""
+    Модель построена на CatBoost — мощном алгоритме градиентного бустинга, который отлично работает с категориальными данными (как наши -1/0/1).  
+    **Почему CatBoost?** Он ловит нелинейные связи, устойчив к шуму и быстро обучается.  
+    """)
+
+    st.subheader("Ключевые гиперпараметры модели")
+    st.write("- iterations: 1500 (с early_stopping)  
+- learning_rate: 0.035  
+- depth: 6  
+- class_weights: [1.0, 1.25] (больше веса фишингу)  
+- eval_metric: 'Recall' (фокус на минимизации пропусков)")
+
+    st.subheader("Оценки модели")
+    st.markdown("""
+    - **Recall (фишинг)**: 0.966 (пропущено всего 32 из 951)  
+    - **Precision**: 0.982 (мало ложных тревог)  
+    - **Accuracy**: 0.98  
+    - **ROC-AUC**: 0.9967 (почти идеальное разделение классов)  
+    - **FN (пропущенные фишинги)**: 32 (на дефолтном пороге 0.5)  
+    """)
+
+    st.subheader("Топ-5 важных признаков")
+    st.write("1. SSLfinal_State: 26.14%  
+2. URL_of_Anchor: 12.77%  
+3. web_traffic: 7.48%  
+4. Links_in_tags: 6.29%  
+5. ssl_anchor_interaction: 5.92%")
+
+    st.success("Модель готова к реальному использованию — быстро и точно! 🌟")
+
+# Футер
+st.sidebar.markdown("---")
+st.sidebar.write("Разработано Muhammad в Душанбе, 2026")  
+st.sidebar.write("GitHub: [ссылка на репозиторий]")
