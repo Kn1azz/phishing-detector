@@ -74,7 +74,7 @@ if page == "Главная":
     
     # Качественное атмосферное фото (тёмная тема, кибербезопасность)
     st.image(
-        "https://www.bing.com/images/search?view=detailV2&ccid=SQM0g1Gz&id=4FD2A599DAC9982B0811F0D071B04C2AD8389227&thid=OIP.SQM0g1Gz03ahXnJjn6r_JwHaD4&mediaurl=https%3a%2f%2fwww.sberbank.ru%2fimages%2f5970%2f1699370332928.jpg&cdnurl=https%3a%2f%2fth.bing.com%2fth%2fid%2fR.4903348351b3d376a15e72639faaff27%3frik%3dJ5I42CpMsHHQ8A%26pid%3dImgRaw%26r%3d0&exph=1609&expw=3072&q=%d0%ba%d1%80%d1%83%d1%82%d1%8b%d0%b5+%d1%84%d0%be%d1%82%d0%ba%d0%b8+%d0%bf%d1%80%d0%be+%d0%ba%d0%b8%d0%b1%d0%b5%d1%80%d0%b1%d0%b5%d0%b7%d0%be%d0%bf%d0%b0%d1%81%d0%bd%d0%be%d1%81%d1%82%d1%8c+%d1%84%d0%b8%d1%88%d0%b8%d0%bd%d0%b3&FORM=IRPRST&ck=E0E0EEEA10AB20346331FF952F845E08&selectedIndex=23&itb=0",
+        "https://www.bing.com/images/search?view=detailV2&ccid=t4Ami8yi&id=64D711EE925B1C344F4F60F9B0799D1DD6AC0A28&thid=OIP.t4Ami8yiOM98gbrphc1HWQHaE8&mediaurl=https%3a%2f%2fxakep.ru%2fwp-content%2fuploads%2f2018%2f03%2f158954%2fphishing.jpg&cdnurl=https%3a%2f%2fth.bing.com%2fth%2fid%2fR.b780268bcca238cf7c81bae985cd4759%3frik%3dKAqs1h2debD5YA%26pid%3dImgRaw%26r%3d0&exph=1069&expw=1600&q=%d0%ba%d1%80%d1%83%d1%82%d1%8b%d0%b5+%d1%84%d0%be%d1%82%d0%ba%d0%b8+%d0%bf%d1%80%d0%be+%d0%ba%d0%b8%d0%b1%d0%b5%d1%80%d0%b1%d0%b5%d0%b7%d0%be%d0%bf%d0%b0%d1%81%d0%bd%d0%be%d1%81%d1%82%d1%8c+%d1%84%d0%b8%d1%88%d0%b8%d0%bd%d0%b3&FORM=IRPRST&ck=5275A88F9D70076358120EB524AF8B53&selectedIndex=34&itb=0",
         caption="Защита в цифровом мире",
         use_column_width=True
     )
