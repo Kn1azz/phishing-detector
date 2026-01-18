@@ -60,36 +60,16 @@ def add_engineered_features(df):
     df['subdomain_prefix'] = (df['having_Sub_Domain'].astype(int) * 
                               df['Prefix_Suffix'].astype(int)).astype(str)
     return df
-# ─── Стилизация (немного современнее) ─────────────────────────────────────────
-st.markdown("""
-    <style>
-    .stApp {
-        background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-        color: white;
-    }
-    .stButton > button {
-        background-color: #00c853;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        padding: 0.6rem 1.2rem;
-        font-weight: bold;
-    }
-    .stButton > button:hover {
-        background-color: #00b140;
-    }
-    </style>
-""", unsafe_allow_html=True)
+
 # ─── Интерфейс ────────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Phishing Detector", layout="wide")
 
 # Боковая панель
-with st.sidebar:
-    st.title("🛡️ Phishing Detector")
-    st.markdown("**Обнаружение фишинга** с точностью ~97%")
-    
-    pages = ["Главная", "Проверка", "Признаки", "О модели"]
-    page = st.radio("Навигация", pages, index=0)
+st.sidebar.title("Phishing Detector")
+st.sidebar.markdown("**Обнаружение фишинговых сайтов**")
+pages = ["Главная", "Проверка сайта", "О модели"]
+page = st.sidebar.radio("Навигация", pages)
+
 # ─── Главная ──────────────────────────────────────────────────────────────────
 if page == "Главная":
     st.title("🛡️ Phishing Detector")
