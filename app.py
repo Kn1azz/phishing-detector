@@ -74,7 +74,7 @@ if page == "Главная":
     
     # Качественное атмосферное фото (тёмная тема, кибербезопасность)
     st.image(
-        "https://www.bing.com/images/search?view=detailV2&ccid=Jwm9P%2bN4&id=11CF85BD3F7FC073DCBC041D7C5F2BEB14CDF8DC&thid=OIP.Jwm9P-N4GeTHoiq59yWzDAHaEK&mediaurl=https%3a%2f%2fdigvel.com.ua%2fwp-content%2fuploads%2f2024%2f03%2fwordpress-edited.jpg&cdnurl=https%3a%2f%2fth.bing.com%2fth%2fid%2fR.2709bd3fe37819e4c7a22ab9f725b30c%3frik%3d3PjNFOsrX3wdBA%26pid%3dImgRaw%26r%3d0&exph=913&expw=1622&q=%d0%ba%d1%80%d1%83%d1%82%d1%8b%d0%b5+%d1%84%d0%be%d1%82%d0%ba%d0%b8+%d0%bf%d1%80%d0%be+%d0%ba%d0%b8%d0%b1%d0%b5%d1%80%d0%b1%d0%b5%d0%b7%d0%be%d0%bf%d0%b0%d1%81%d0%bd%d0%be%d1%81%d1%82%d1%8c+%d1%84%d0%b8%d1%88%d0%b8%d0%bd%d0%b3&FORM=IRPRST&ck=7478BA547E1D11C008CD7D47BAF1989B&selectedIndex=2&itb=0",
+        "https://www.istockphoto.com/ru/%D1%84%D0%BE%D1%82%D0%BE/%D0%BA%D0%BE%D0%BD%D1%86%D0%B5%D0%BF%D1%86%D0%B8%D1%8F-%D0%BA%D0%BE%D0%BD%D1%84%D0%B8%D0%B4%D0%B5%D0%BD%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D1%81%D1%82%D0%B8-%D0%B1%D0%B8%D0%B7%D0%BD%D0%B5%D1%81-%D1%82%D0%B5%D1%85%D0%BD%D0%BE%D0%BB%D0%BE%D0%B3%D0%B8%D0%B9-%D0%BF%D0%BE-%D0%B7%D0%B0%D1%89%D0%B8%D1%82%D0%B5-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-%D0%BA%D0%B8%D0%B1%D0%B5%D1%80%D0%B1%D0%B5%D0%B7%D0%BE%D0%BF%D0%B0%D1%81%D0%BD%D0%BE%D1%81%D1%82%D0%B8-gm2174551157-594225817",
         caption="Защита в цифровом мире",
         use_column_width=True
     )
