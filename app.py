@@ -162,7 +162,7 @@ elif page == "Проверка сайта":
                     ### ✅ Сайт выглядит безопасным
                     Вероятность фишинга: **{proba:.1f}%**
                     """)
-                    st.image("https://images.unsplash.com/photo-1563204424-5f9e4c1c8a9c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    st.image("photos/8.jpg",
                     caption="Всё выглядит безопасно",
                     width=400)  
                     st.markdown("Но всегда будьте осторожны и проверчйте адрес и сертификат вручную.")
