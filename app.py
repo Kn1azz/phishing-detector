@@ -153,7 +153,7 @@ elif page == "Проверка сайта":
                     ### ⚠️ ОПАСНО! Фишинговый сайт!
                     Вероятность фишинга: **{proba:.1f}%**
                     """)
-                    st.image("https://images.unsplash.com/photo-1614064641938-3bbee52942c7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    st.image("photos/5.jpg",
                     caption="Опасность обнаружена!",
                     width=400)
                     st.markdown("**Не вводите** личные данные, пароли или банковские карты!")
