@@ -95,7 +95,7 @@ if page == "Главная":
     col1, col2 = st.columns(2)
     with col1:
         st.image(
-            "https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            "photos/3.avif",
             caption="Безопасное соединение",
             use_column_width=True
         )
