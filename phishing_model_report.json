@@ -1,0 +1,36 @@
+{
+    "model_type": "CatBoostClassifier",
+    "best_iteration": 415,
+    "best_test_recall": 0.96635,
+    "test_roc_auc": 0.99668,
+    "test_accuracy": 0.98,
+    "recall_threshold_05": 0.966,
+    "precision_threshold_05": 0.982,
+    "fn_threshold_05": 32,
+    "total_features": 26,
+    "training_date": "2026-01-18 14:06:16",
+    "dataset": "UCI Phishing Websites + feature engineering",
+    "top_features": [
+        {
+            "name": "SSLfinal_State",
+            "importance": 26.14
+        },
+        {
+            "name": "URL_of_Anchor",
+            "importance": 12.77
+        },
+        {
+            "name": "web_traffic",
+            "importance": 7.48
+        },
+        {
+            "name": "Links_in_tags",
+            "importance": 6.29
+        },
+        {
+            "name": "ssl_anchor_interaction",
+            "importance": 5.92
+        }
+    ],
+    "notes": "Модель с фокусом на recall. Пропущено всего 32 фишинговых сайта из 951 на пороге 0.5"
+}
