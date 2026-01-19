@@ -73,7 +73,7 @@ if page == "Главная":
     st.title("🛡️ Phishing Detector")
 
     st.image(
-        "photos/ph.jpg",
+        "photos/2.jpg",
         caption="Защита в цифровом мире",
         use_column_width=True
     )
