@@ -103,7 +103,7 @@ if page == "Главная":
     with col2:
         st.image(
             "photos/4.avif",
-            caption="Кибербезопасность будущего",
+            caption="Схемы обмана",
             use_column_width=True
         )
 
